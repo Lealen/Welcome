@@ -21,16 +21,10 @@ func (c *Gui) Setup(w *ecs.World) {
 	w.AddSystem(&engi.MouseSystem{})
 	w.AddSystem(&GuiSystem{})
 
+	engi.RegisterScene(&TestPuzzle{})
+
 	menu := ecs.NewEntity([]string{"RenderSystem", "GuiSystem"})
 	w.AddEntity(menu)
-
-	/*
-		ticker := time.NewTicker(1000 * time.Millisecond / 60)
-		go func() {
-			for _ = range ticker.C {
-				UpdateEntities()
-			}
-		}()*/
 }
 
 func (*Gui) Hide()        {}
@@ -140,7 +134,7 @@ func (c *GuiSystem) New(w *ecs.World) {
 	})
 	entwindow.AddChildren(entwindowtoprightcloseicon)
 
-	NewEntity("windowtopborder", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
+	NewEntity("testicon", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture:  loadTexture("icon.png"),
 		Position: engi.Point{X: 1200, Y: 100},
 		Scale:    engi.Point{X: 10, Y: 10},
@@ -164,6 +158,16 @@ func (c *GuiSystem) New(w *ecs.World) {
 		entwindow.AddChildren(entwindowtexttest)
 	}
 	//*/
+
+	NewEntity("gotopuzzle", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
+		Texture:  c.font.Render("_test_puzzle_"),
+		Position: engi.Point{X: 1520, Y: 980},
+		Scale:    engi.Point{X: 1, Y: 1},
+		OnPress: func(e *Entity) {
+			engi.SetSceneByName("TestPuzzle", true)
+		},
+	})
+
 }
 
 func (c *GuiSystem) Update(entity *ecs.Entity, dt float32) {

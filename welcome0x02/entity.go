@@ -16,7 +16,8 @@ type Entity struct {
 	Parent    *Entity
 
 	PositionRelativeToParent engi.Point
-	MoveWithParent           bool
+	MoveWithParent,
+	DontAutoSetPosition bool
 
 	World *ecs.World
 
@@ -46,7 +47,8 @@ type EntityDefaults struct {
 	AnimationRate float32
 
 	PositionRelativeToParent engi.Point
-	MoveWithParent           bool
+	MoveWithParent,
+	DontAutoSetPosition bool
 
 	Priority engi.PriorityLevel
 
@@ -70,6 +72,7 @@ func getDefaultDefaults() *EntityDefaults {
 	d.Height = 0.0
 	d.PositionRelativeToParent = engi.Point{X: 0, Y: 0}
 	d.MoveWithParent = false
+	d.DontAutoSetPosition = false
 	d.Priority = engi.MiddleGround
 	return &d
 }
@@ -88,6 +91,7 @@ func NewEntity(name string, systems []string, world *ecs.World, defaults *Entity
 
 	c.PositionRelativeToParent = defaults.PositionRelativeToParent
 	c.MoveWithParent = defaults.MoveWithParent
+	c.DontAutoSetPosition = defaults.DontAutoSetPosition
 
 	for _, v := range systems {
 		switch v {
@@ -158,7 +162,12 @@ func (p *Entity) AddChildren(c *Entity) {
 	p.Childrens = append(p.Childrens, c)
 	c.Parent = p
 
-	c.PositionRelativeToParent = engi.Point{X: c.Space.Position.X - p.Space.Position.X, Y: c.Space.Position.Y - p.Space.Position.Y}
+	if !c.DontAutoSetPosition && c.PositionRelativeToParent.X == 0 && c.PositionRelativeToParent.Y == 0 {
+		c.PositionRelativeToParent = engi.Point{X: c.Space.Position.X - p.Space.Position.X, Y: c.Space.Position.Y - p.Space.Position.Y}
+	} else if !c.DontAutoSetPosition && c.Space.Position.X == 0 && c.Space.Position.Y == 0 {
+		c.Space.Position.X = p.Space.Position.X + c.PositionRelativeToParent.X
+		c.Space.Position.Y = p.Space.Position.Y + c.PositionRelativeToParent.Y
+	}
 }
 
 func (c *Entity) PosAdd(p2 engi.Point) {
