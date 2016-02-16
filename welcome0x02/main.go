@@ -22,8 +22,8 @@ func main() {
 	options := engi.RunOptions{
 		Title:                  GameName,
 		Fullscreen:             config.Fullscreen,
-		Width:                  width,
-		Height:                 height,
+		Width:                  config.Width,
+		Height:                 config.Height,
 		VSync:                  config.VSync,
 		ScaleOnResize:          false,
 		KeepAspectRatioOnScale: false,

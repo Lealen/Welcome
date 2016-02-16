@@ -3,15 +3,20 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"os"
 )
 
 var config struct {
+	Width,
+	Height int
 	Fullscreen,
 	VSync bool
 	FPSLimit int
 }
 
 func loadDefaultConfig() {
+	config.Width = 1366
+	config.Height = 768
 	config.Fullscreen = false
 	config.VSync = false
 	config.FPSLimit = 120
@@ -34,9 +39,8 @@ func loadConfig() {
 	loadDefaultConfig()
 	data, err := loadFromFile("config.ini")
 	if err != nil {
-		if err.Error() == "open config.ini: no such file or directory" {
+		if os.IsNotExist(err) {
 			saveConfig()
-			return
 		}
 		log.Println(err)
 		return
