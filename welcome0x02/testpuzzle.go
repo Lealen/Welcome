@@ -174,6 +174,18 @@ func (c *TestPuzzleSystem) New(w *ecs.World) {
 				e.Variables["number"] = newnumber
 				e.Render.SetDrawable(c.font.Render(strconv.Itoa(newnumber)))
 			},
+			OnRightPress: func(e *Entity) {
+				newnumber := 1
+				if number, ok := e.Variables["number"]; ok {
+					newnumber = number.(int)
+					newnumber--
+					if newnumber < 0 {
+						newnumber = 9
+					}
+				}
+				e.Variables["number"] = newnumber
+				e.Render.SetDrawable(c.font.Render(strconv.Itoa(newnumber)))
+			},
 		})
 		number1.Variables["number"] = 0
 		entwindow.AddChildren(number1)

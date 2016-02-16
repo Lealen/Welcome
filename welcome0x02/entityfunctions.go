@@ -7,7 +7,23 @@ var entititesFunctions []*Entity
 var lastwindowwidth, lastwindowheight float32
 var PreviousMousePosX, PreviousMousePosY float32
 
+func IsMouseOn(e *Entity) bool {
+	mx := engi.Mouse.X
+	my := engi.Mouse.Y
+	if mx > e.Space.Position.X && mx < (e.Space.Position.X+e.Space.Width) &&
+		my > e.Space.Position.Y && my < (e.Space.Position.Y+e.Space.Height) {
+		return true
+	}
+	return false
+}
+
 func UpdateEntities() {
+	for _, v := range entititesFunctions {
+		if v.OnUpdate != nil {
+			v.OnUpdate(v)
+		}
+	}
+
 	if lastwindowwidth == 0 && lastwindowheight == 0 {
 		lastwindowwidth = engi.WindowWidth()
 		lastwindowheight = engi.WindowHeight()
@@ -25,7 +41,8 @@ func UpdateEntities() {
 		if v.Mouse == nil {
 			continue
 		}
-		if v.Mouse.Clicked {
+		ison := IsMouseOn(v)
+		if ison && engi.Keys.Get(engi.MouseButtonLeft).Down() {
 			if !v.IsClicked {
 				if v.OnPress != nil {
 					v.OnPress(v)
@@ -41,12 +58,25 @@ func UpdateEntities() {
 			}
 			v.IsClicked = false
 		}
-		if v.OnDragged != nil && v.Mouse.Dragged {
+		if v.OnDragged != nil && v.Mouse.Dragged && engi.Keys.Get(engi.MouseButtonLeft).Down() {
 			v.OnDragged(v)
 		}
-		//		if v.OnRightClicked != nil && v.Mouse.Rightclicked {
-		//			v.OnRightClicked(v)
-		//		}
+		if ison && engi.Keys.Get(engi.MouseButtonRight).Down() {
+			if !v.IsRightClicked {
+				if v.OnRightPress != nil {
+					v.OnRightPress(v)
+				}
+				v.IsRightClicked = true
+			}
+			if v.OnRightClicked != nil {
+				v.OnRightClicked(v)
+			}
+		} else if v.IsRightClicked {
+			if v.OnRightRelease != nil {
+				v.OnRightRelease(v)
+			}
+			v.IsRightClicked = false
+		}
 		if v.OnEnter != nil && v.Mouse.Enter {
 			v.OnEnter(v)
 		}

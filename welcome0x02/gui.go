@@ -95,6 +95,15 @@ func (c *GuiSystem) New(w *ecs.World) {
 			//fmt.Println("dragged")
 			e.Parent.PosAdd(engi.Point{X: engi.Mouse.X - PreviousMousePosX, Y: engi.Mouse.Y - PreviousMousePosY})
 		},
+		OnRightClicked: func(e *Entity) {
+			//fmt.Println("right clicked")
+		},
+		OnRightPress: func(e *Entity) {
+			fmt.Println("right pressed")
+		},
+		OnRightRelease: func(e *Entity) {
+			fmt.Println("right released")
+		},
 		OnEnter: func(e *Entity) {
 			fmt.Println("entered")
 		},

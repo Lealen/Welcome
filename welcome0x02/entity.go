@@ -21,15 +21,19 @@ type Entity struct {
 
 	World *ecs.World
 
-	IsClicked bool
+	IsClicked,
+	IsRightClicked bool
 	OnClicked,
 	OnPress,
 	OnRelease,
 	OnDragged,
-	//OnRightClicked,
+	OnRightClicked,
+	OnRightPress,
+	OnRightRelease,
 	OnEnter,
 	OnLeave,
-	OnWindowResize func(*Entity)
+	OnWindowResize,
+	OnUpdate func(*Entity)
 
 	Variables map[string]interface{}
 }
@@ -56,10 +60,13 @@ type EntityDefaults struct {
 	OnPress,
 	OnRelease,
 	OnDragged,
-	//OnRightClicked,
+	OnRightClicked,
+	OnRightPress,
+	OnRightRelease,
 	OnEnter,
 	OnLeave,
-	OnWindowResize func(*Entity)
+	OnWindowResize,
+	OnUpdate func(*Entity)
 }
 
 func getDefaultDefaults() *EntityDefaults {
@@ -124,10 +131,13 @@ func NewEntity(name string, systems []string, world *ecs.World, defaults *Entity
 	c.OnPress = defaults.OnPress
 	c.OnRelease = defaults.OnRelease
 	c.OnDragged = defaults.OnDragged
-	//c.OnRightClicked = defaults.OnRightClicked
+	c.OnRightClicked = defaults.OnRightClicked
+	c.OnRightPress = defaults.OnRightPress
+	c.OnRightRelease = defaults.OnRightRelease
 	c.OnEnter = defaults.OnEnter
 	c.OnLeave = defaults.OnLeave
 	c.OnWindowResize = defaults.OnWindowResize
+	c.OnUpdate = defaults.OnUpdate
 
 	return
 }
