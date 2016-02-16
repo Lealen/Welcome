@@ -184,7 +184,7 @@ func (c *Entity) PosSet(p2 engi.Point) {
 	for _, v := range c.Childrens {
 		if v.MoveWithParent {
 			ptmp := p2
-			ptmp.Add(c.PositionRelativeToParent)
+			ptmp.Add(v.PositionRelativeToParent)
 			v.PosSet(ptmp)
 		}
 	}

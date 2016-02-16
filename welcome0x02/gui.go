@@ -161,7 +161,7 @@ func (c *GuiSystem) New(w *ecs.World) {
 
 	NewEntity("gotopuzzle", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture:  c.font.Render("_test_puzzle_"),
-		Position: engi.Point{X: 1520, Y: 980},
+		Position: engi.Point{X: engi.Width() - 320, Y: engi.Height() - 50},
 		Scale:    engi.Point{X: 1, Y: 1},
 		OnPress: func(e *Entity) {
 			engi.SetSceneByName("TestPuzzle", true)

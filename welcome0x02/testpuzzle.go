@@ -160,12 +160,11 @@ func (c *TestPuzzleSystem) New(w *ecs.World) {
 
 	for i := 0; i < 4; i++ {
 		number1 := NewEntity("number1", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
-			Texture:  c.font.Render("0"),
-			Position: engi.Point{X: float32(220 + i*2*80), Y: 300},
-			Scale:    engi.Point{X: 3, Y: 3},
-			PositionRelativeToParent: engi.Point{X: float32(i * 2 * 80), Y: 200},
-			MoveWithParent:           true,
-			Priority:                 engi.MiddleGround + 3,
+			Texture:        c.font.Render("0"),
+			Position:       engi.Point{X: float32(220 + i*2*80), Y: 300},
+			Scale:          engi.Point{X: 3, Y: 3},
+			MoveWithParent: true,
+			Priority:       engi.MiddleGround + 3,
 			OnPress: func(e *Entity) {
 				newnumber := 1
 				if number, ok := e.Variables["number"]; ok {
