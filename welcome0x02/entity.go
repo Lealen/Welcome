@@ -21,8 +21,10 @@ type Entity struct {
 
 	World *ecs.World
 
+	Initialized,
 	IsClicked,
 	IsRightClicked bool
+	OnFirstUpdate,
 	OnClicked,
 	OnPress,
 	OnRelease,
@@ -56,6 +58,7 @@ type EntityDefaults struct {
 
 	Priority engi.PriorityLevel
 
+	OnFirstUpdate,
 	OnClicked,
 	OnPress,
 	OnRelease,
@@ -87,7 +90,7 @@ func getDefaultDefaults() *EntityDefaults {
 func NewEntity(name string, systems []string, world *ecs.World, defaults *EntityDefaults) (c *Entity) {
 	c = &Entity{}
 	c.Entity = ecs.NewEntity(systems)
-	entititesFunctions = append(entititesFunctions, c)
+	entititesFunctions[engi.CurrentScene()] = append(entititesFunctions[engi.CurrentScene()], c)
 	c.World = world
 
 	c.Variables = make(map[string]interface{})
@@ -146,9 +149,9 @@ func (e *Entity) RemoveEntity() {
 	for _, v := range e.Childrens {
 		v.RemoveEntity()
 	}
-	for k, v := range entititesFunctions {
+	for k, v := range entititesFunctions[engi.CurrentScene()] {
 		if v == e {
-			entititesFunctions = append(entititesFunctions[:k], entititesFunctions[k+1:]...)
+			entititesFunctions[engi.CurrentScene()] = append(entititesFunctions[engi.CurrentScene()][:k], entititesFunctions[engi.CurrentScene()][k+1:]...)
 			return
 		}
 	}
@@ -182,6 +185,9 @@ func (p *Entity) AddChildren(c *Entity) {
 
 func (c *Entity) PosAdd(p2 engi.Point) {
 	c.Space.Position.Add(p2)
+	if c.Parent != nil && c.MoveWithParent {
+		c.PositionRelativeToParent = engi.Point{X: c.Space.Position.X - c.Parent.Space.Position.X, Y: c.Space.Position.Y - c.Parent.Space.Position.Y}
+	}
 	for _, v := range c.Childrens {
 		if v.MoveWithParent {
 			v.PosAdd(p2)
@@ -191,6 +197,9 @@ func (c *Entity) PosAdd(p2 engi.Point) {
 
 func (c *Entity) PosSet(p2 engi.Point) {
 	c.Space.Position.SetPoint(p2)
+	if c.Parent != nil && c.MoveWithParent {
+		c.PositionRelativeToParent = engi.Point{X: c.Space.Position.X - c.Parent.Space.Position.X, Y: c.Space.Position.Y - c.Parent.Space.Position.Y}
+	}
 	for _, v := range c.Childrens {
 		if v.MoveWithParent {
 			ptmp := p2

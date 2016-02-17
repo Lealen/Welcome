@@ -57,6 +57,11 @@ func (c *TestPuzzleSystem) New(w *ecs.World) {
 	c.System = ecs.NewSystem()
 	c.world = w
 
+	//usuwanie poprzedniej takiej samej sceny, jeśli istniała,  nie przepełniać pamięci, można później przenieść do zamykania po prostu, albo nie pracować na scenach
+	if _, ok := entititesFunctions[engi.CurrentScene()]; ok {
+		delete(entititesFunctions, engi.CurrentScene())
+	}
+
 	c.font = &engi.Font{
 		URL:  "04b.ttf",
 		Size: 40,
@@ -204,7 +209,7 @@ func (c *TestPuzzleSystem) New(w *ecs.World) {
 
 	s1 := rand.NewSource(time.Now().UnixNano())
 	r1 := rand.New(s1)
-	randomnumber := r1.Intn(9999)
+	randomnumber := r1.Intn(10000)
 
 	entwindow.AddChildren(NewEntity("numbercheck", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture: c.font.Render("check numbers"),

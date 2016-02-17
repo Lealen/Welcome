@@ -2,7 +2,7 @@ package main
 
 import "github.com/Lealen/engi"
 
-var entititesFunctions []*Entity
+var entititesFunctions = make(map[engi.Scene][]*Entity)
 
 var lastwindowwidth, lastwindowheight float32
 var PreviousMousePosX, PreviousMousePosY float32
@@ -18,7 +18,13 @@ func IsMouseOn(e *Entity) bool {
 }
 
 func UpdateEntities() {
-	for _, v := range entititesFunctions {
+	for _, v := range entititesFunctions[engi.CurrentScene()] {
+		if !v.Initialized {
+			if v.OnFirstUpdate != nil {
+				v.OnFirstUpdate(v)
+			}
+			v.Initialized = true
+		}
 		if v.OnUpdate != nil {
 			v.OnUpdate(v)
 		}
@@ -28,7 +34,7 @@ func UpdateEntities() {
 		lastwindowwidth = engi.WindowWidth()
 		lastwindowheight = engi.WindowHeight()
 	} else if lastwindowwidth != engi.WindowWidth() || lastwindowheight != engi.WindowHeight() {
-		for _, v := range entititesFunctions {
+		for _, v := range entititesFunctions[engi.CurrentScene()] {
 			if v.OnWindowResize != nil {
 				v.OnWindowResize(v)
 			}
@@ -37,7 +43,7 @@ func UpdateEntities() {
 		lastwindowheight = engi.WindowHeight()
 	}
 
-	for _, v := range entititesFunctions {
+	for _, v := range entititesFunctions[engi.CurrentScene()] {
 		if v.Mouse == nil {
 			continue
 		}

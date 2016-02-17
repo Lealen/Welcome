@@ -22,6 +22,7 @@ func (c *Gui) Setup(w *ecs.World) {
 	w.AddSystem(&GuiSystem{})
 
 	engi.RegisterScene(&TestPuzzle{})
+	engi.RegisterScene(&TestPuzzle2{})
 
 	menu := ecs.NewEntity([]string{"RenderSystem", "GuiSystem"})
 	w.AddEntity(menu)
@@ -169,11 +170,20 @@ func (c *GuiSystem) New(w *ecs.World) {
 	//*/
 
 	NewEntity("gotopuzzle", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
-		Texture:  c.font.Render("_test_puzzle_"),
+		Texture:  c.font.Render("_test_puzzle_1_"),
 		Position: engi.Point{X: engi.Width() - 320, Y: engi.Height() - 50},
 		Scale:    engi.Point{X: 1, Y: 1},
 		OnPress: func(e *Entity) {
 			engi.SetSceneByName("TestPuzzle", true)
+		},
+	})
+
+	NewEntity("gotopuzzle", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
+		Texture:  c.font.Render("_test_puzzle_2_"),
+		Position: engi.Point{X: engi.Width() - 320, Y: engi.Height() - 50 - 50},
+		Scale:    engi.Point{X: 1, Y: 1},
+		OnPress: func(e *Entity) {
+			engi.SetSceneByName("TestPuzzle2", true)
 		},
 	})
 
