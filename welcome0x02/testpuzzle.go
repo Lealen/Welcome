@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"math"
-	"math/rand"
 	"strconv"
-	"time"
 
 	"github.com/Lealen/engi"
 	"github.com/Lealen/engi/ecs"
@@ -207,9 +205,7 @@ func (c *TestPuzzleSystem) New(w *ecs.World) {
 	})
 	entwindow.AddChildren(probpozostalo)
 
-	s1 := rand.NewSource(time.Now().UnixNano())
-	r1 := rand.New(s1)
-	randomnumber := r1.Intn(10000)
+	randomnumber := randoms.Intn(10000)
 
 	entwindow.AddChildren(NewEntity("numbercheck", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture: c.font.Render("check numbers"),

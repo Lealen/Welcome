@@ -103,6 +103,19 @@ func NewEntity(name string, systems []string, world *ecs.World, defaults *Entity
 	c.MoveWithParent = defaults.MoveWithParent
 	c.DontAutoSetPosition = defaults.DontAutoSetPosition
 
+	if defaults.Scale.X == 0 && defaults.Scale.Y == 0 && defaults.Width == 0 && defaults.Height == 0 && defaults.Texture != nil {
+		defaults.Scale.X = 1
+		defaults.Scale.Y = 1
+		defaults.Width = defaults.Texture.Width()
+		defaults.Height = defaults.Texture.Height()
+	} else if defaults.Scale.X == 0 && defaults.Scale.Y == 0 && defaults.Texture != nil {
+		defaults.Scale.X = defaults.Width / defaults.Texture.Width()
+		defaults.Scale.Y = defaults.Height / defaults.Texture.Height()
+	} else if defaults.Width == 0 && defaults.Height == 0 && defaults.Texture != nil {
+		defaults.Width = defaults.Texture.Width() * defaults.Scale.X
+		defaults.Height = defaults.Texture.Height() * defaults.Scale.Y
+	}
+
 	for _, v := range systems {
 		switch v {
 		case "RenderSystem":

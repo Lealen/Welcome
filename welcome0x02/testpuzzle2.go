@@ -5,10 +5,8 @@ import (
 	"image"
 	"image/draw"
 	"log"
-	"math/rand"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/Lealen/engi"
 	"github.com/Lealen/engi/ecs"
@@ -62,7 +60,6 @@ func (c *TestPuzzle2System) New(w *ecs.World) {
 	entwindow := NewEntity("window", []string{"RenderSystem"}, c.world, &EntityDefaults{
 		Texture:  loadTexture("guitestblack.png"),
 		Position: engi.Point{X: 100, Y: 100},
-		Scale:    engi.Point{X: 40, Y: 30},
 		Width:    800,
 		Height:   600 + 20,
 		Priority: engi.MiddleGround,
@@ -71,7 +68,6 @@ func (c *TestPuzzle2System) New(w *ecs.World) {
 	entwindow.AddChildren(NewEntity("windowtopborder", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture:  loadTexture("guitesttop.png"),
 		Position: engi.Point{X: 100, Y: 100},
-		Scale:    engi.Point{X: 40, Y: 1},
 		Width:    800,
 		Height:   20,
 		PositionRelativeToParent: engi.Point{X: 0, Y: 0},
@@ -95,7 +91,6 @@ func (c *TestPuzzle2System) New(w *ecs.World) {
 	entwindow.AddChildren(NewEntity("windowtopleftborder", []string{"RenderSystem"}, c.world, &EntityDefaults{
 		Texture:  loadTexture("guitestleft.png"),
 		Position: engi.Point{X: 100, Y: 100},
-		Scale:    engi.Point{X: 1, Y: 1},
 		Width:    20,
 		Height:   20,
 		PositionRelativeToParent: engi.Point{X: 0, Y: 0},
@@ -106,7 +101,6 @@ func (c *TestPuzzle2System) New(w *ecs.World) {
 	entwindow.AddChildren(NewEntity("windowtoprightcloseicon", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture:  loadTexture("guix.png"),
 		Position: engi.Point{X: 880, Y: 100},
-		Scale:    engi.Point{X: 1, Y: 1},
 		Width:    20,
 		Height:   20,
 		PositionRelativeToParent: engi.Point{X: 780, Y: 0},
@@ -127,9 +121,7 @@ func (c *TestPuzzle2System) New(w *ecs.World) {
 		return engi.NewImageObject(newm)
 	}
 
-	s1 := rand.NewSource(time.Now().UnixNano())
-	r1 := rand.New(s1)
-	randomnumber := r1.Intn(9) + 1 //1-9
+	randomnumber := randoms.Intn(9) + 1 //1-9
 
 	file, err := os.Open("assets" + string(os.PathSeparator) + "testpuzzle2" + string(os.PathSeparator) + strconv.Itoa(randomnumber) + ".jpg")
 	if err != nil {
@@ -202,7 +194,7 @@ func (c *TestPuzzle2System) New(w *ecs.World) {
 	}
 
 	for i := 0; i < 50; i++ {
-		rn1, rn2 := r1.Intn(16), r1.Intn(16)
+		rn1, rn2 := randoms.Intn(16), randoms.Intn(16)
 		siatka[rn1], siatka[rn2] = siatka[rn2], siatka[rn1]
 		pos1 := siatka[rn1].Space.Position
 		siatka[rn1].PosSet(siatka[rn2].Space.Position)
