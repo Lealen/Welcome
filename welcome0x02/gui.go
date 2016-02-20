@@ -94,7 +94,7 @@ func (c *GuiSystem) New(w *ecs.World) {
 		},
 		OnDragged: func(e *Entity) {
 			//fmt.Println("dragged")
-			e.Parent.PosAdd(engi.Point{X: engi.Mouse.X - PreviousMousePosX, Y: engi.Mouse.Y - PreviousMousePosY})
+			e.Parent.PosAdd(engi.Point{X: mouseX - prevMouseX, Y: mouseY - prevMouseY})
 		},
 		OnRightClicked: func(e *Entity) {
 			//fmt.Println("right clicked")
@@ -151,7 +151,7 @@ func (c *GuiSystem) New(w *ecs.World) {
 		Width:    160,
 		Height:   160,
 		OnDragged: func(e *Entity) {
-			e.PosAdd(engi.Point{X: engi.Mouse.X - PreviousMousePosX, Y: engi.Mouse.Y - PreviousMousePosY})
+			e.PosAdd(engi.Point{X: mouseX - prevMouseX, Y: mouseY - prevMouseY})
 		},
 	})
 

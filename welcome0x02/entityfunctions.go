@@ -5,19 +5,24 @@ import "github.com/Lealen/engi"
 var entititesFunctions = make(map[engi.Scene][]*Entity)
 
 var lastwindowwidth, lastwindowheight float32
-var PreviousMousePosX, PreviousMousePosY float32
+
+//var PreviousMousePosX, PreviousMousePosY float32
+var mouseX, mouseY float32
+var prevMouseX, prevMouseY float32
 
 func IsMouseOn(e *Entity) bool {
-	mx := engi.Mouse.X
-	my := engi.Mouse.Y
-	if mx > e.Space.Position.X && mx < (e.Space.Position.X+e.Space.Width) &&
-		my > e.Space.Position.Y && my < (e.Space.Position.Y+e.Space.Height) {
+	if mouseX > e.Space.Position.X && mouseX < (e.Space.Position.X+e.Space.Width) &&
+		mouseY > e.Space.Position.Y && mouseY < (e.Space.Position.Y+e.Space.Height) {
 		return true
 	}
 	return false
 }
 
 func UpdateEntities() {
+	//game coordinates
+	mouseX = engi.Mouse.X*CameraGetZ()*(engi.Width()/engi.WindowWidth()) + CameraGetX() - (engi.Width()/2)*CameraGetZ()
+	mouseY = engi.Mouse.Y*CameraGetZ()*(engi.Height()/engi.WindowHeight()) + CameraGetY() - (engi.Height()/2)*CameraGetZ()
+
 	for _, v := range entititesFunctions[engi.CurrentScene()] {
 		if !v.Initialized {
 			if v.OnFirstUpdate != nil {
@@ -91,6 +96,8 @@ func UpdateEntities() {
 		}
 	}
 
-	PreviousMousePosX = engi.Mouse.X
-	PreviousMousePosY = engi.Mouse.Y
+	//PreviousMousePosX = engi.Mouse.X
+	//PreviousMousePosY = engi.Mouse.Y
+	prevMouseX = mouseX
+	prevMouseY = mouseY
 }

@@ -122,7 +122,7 @@ func (c *TestPuzzleSystem) New(w *ecs.World) {
 		MoveWithParent:           true,
 		Priority:                 engi.MiddleGround + 1,
 		OnDragged: func(e *Entity) {
-			e.Parent.PosAdd(engi.Point{X: engi.Mouse.X - PreviousMousePosX, Y: engi.Mouse.Y - PreviousMousePosY})
+			e.Parent.PosAdd(engi.Point{X: mouseX - prevMouseX, Y: mouseY - prevMouseY})
 			if e.Parent.Space.Position.X < 0 {
 				e.Parent.PosSet(engi.Point{X: 0, Y: e.Parent.Space.Position.Y})
 			} else if e.Parent.Space.Position.X > engi.Width()-e.Parent.Space.Width {
