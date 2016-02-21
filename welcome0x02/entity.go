@@ -165,11 +165,10 @@ func (e *Entity) RemoveEntity() {
 	for k, v := range entititesFunctions[engi.CurrentScene()] {
 		if v == e {
 			entititesFunctions[engi.CurrentScene()] = append(entititesFunctions[engi.CurrentScene()][:k], entititesFunctions[engi.CurrentScene()][k+1:]...)
-			return
+			break
 		}
 	}
 	if e.Render != nil {
-		e.Render.SetDrawable(nil)
 		e.Entity.RemoveComponent(e.Render)
 	}
 	if e.Space != nil {
