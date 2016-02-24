@@ -203,5 +203,5 @@ func (c *TestPuzzle2System) New(w *ecs.World) {
 }
 
 func (c *TestPuzzle2System) Update(entity *ecs.Entity, dt float32) {
-	UpdateEntities()
+	UpdateEntities(dt)
 }

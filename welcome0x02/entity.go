@@ -16,8 +16,11 @@ type Entity struct {
 	Parent    *Entity
 
 	PositionRelativeToParent engi.Point
+	PriorityRelativeToParent engi.PriorityLevel
 	MoveWithParent,
-	DontAutoSetPosition bool
+	DontAutoSetPosition,
+	DontAutoSetPriority,
+	IgnoreWhatIsOnTop bool
 
 	World *ecs.World
 
@@ -34,10 +37,12 @@ type Entity struct {
 	OnRightRelease,
 	OnEnter,
 	OnLeave,
-	OnWindowResize,
-	OnUpdate func(*Entity)
+	OnWindowResize func(*Entity)
+	OnUpdate func(*Entity, float32)
 
 	Variables map[string]interface{}
+
+	priority engi.PriorityLevel
 }
 
 type EntityDefaults struct {
@@ -53,8 +58,11 @@ type EntityDefaults struct {
 	AnimationRate float32
 
 	PositionRelativeToParent engi.Point
+	PriorityRelativeToParent engi.PriorityLevel
 	MoveWithParent,
-	DontAutoSetPosition bool
+	DontAutoSetPosition,
+	DontAutoSetPriority,
+	IgnoreWhatIsOnTop bool
 
 	Priority engi.PriorityLevel
 
@@ -68,23 +76,8 @@ type EntityDefaults struct {
 	OnRightRelease,
 	OnEnter,
 	OnLeave,
-	OnWindowResize,
-	OnUpdate func(*Entity)
-}
-
-func getDefaultDefaults() *EntityDefaults {
-	d := EntityDefaults{}
-	d.Texture = loadTexture("notfound.png")
-	d.SpriteSheet = nil
-	d.Position = engi.Point{X: 0, Y: 0}
-	d.Scale = engi.Point{X: 1, Y: 1}
-	d.Width = 0.0
-	d.Height = 0.0
-	d.PositionRelativeToParent = engi.Point{X: 0, Y: 0}
-	d.MoveWithParent = false
-	d.DontAutoSetPosition = false
-	d.Priority = engi.MiddleGround
-	return &d
+	OnWindowResize func(*Entity)
+	OnUpdate func(*Entity, float32)
 }
 
 func NewEntity(name string, systems []string, world *ecs.World, defaults *EntityDefaults) (c *Entity) {
@@ -96,12 +89,16 @@ func NewEntity(name string, systems []string, world *ecs.World, defaults *Entity
 	c.Variables = make(map[string]interface{})
 
 	if defaults == nil {
-		defaults = getDefaultDefaults()
+		defaults = &EntityDefaults{}
+		defaults.Texture = loadTexture("notfound.png")
 	}
 
 	c.PositionRelativeToParent = defaults.PositionRelativeToParent
+	c.PriorityRelativeToParent = defaults.PriorityRelativeToParent
 	c.MoveWithParent = defaults.MoveWithParent
 	c.DontAutoSetPosition = defaults.DontAutoSetPosition
+	c.DontAutoSetPriority = defaults.DontAutoSetPriority
+	c.IgnoreWhatIsOnTop = defaults.IgnoreWhatIsOnTop
 
 	if defaults.Scale.X == 0 && defaults.Scale.Y == 0 && defaults.Width == 0 && defaults.Height == 0 && defaults.Texture != nil {
 		defaults.Scale.X = 1
@@ -155,6 +152,9 @@ func NewEntity(name string, systems []string, world *ecs.World, defaults *Entity
 	c.OnWindowResize = defaults.OnWindowResize
 	c.OnUpdate = defaults.OnUpdate
 
+	c.priority = defaults.Priority
+
+	entitiesChange = true
 	return
 }
 
@@ -181,6 +181,8 @@ func (e *Entity) RemoveEntity() {
 		e.Entity.RemoveComponent(e.Mouse)
 	}
 	e.World.RemoveEntity(e.Entity)
+
+	entitiesChange = true
 }
 
 func (p *Entity) AddChildren(c *Entity) {
@@ -192,6 +194,10 @@ func (p *Entity) AddChildren(c *Entity) {
 	} else if !c.DontAutoSetPosition && c.Space.Position.X == 0 && c.Space.Position.Y == 0 {
 		c.Space.Position.X = p.Space.Position.X + c.PositionRelativeToParent.X
 		c.Space.Position.Y = p.Space.Position.Y + c.PositionRelativeToParent.Y
+	}
+
+	if !c.DontAutoSetPriority && c.PriorityRelativeToParent == 0 {
+		c.PriorityRelativeToParent = c.priority - p.priority
 	}
 }
 
@@ -218,5 +224,23 @@ func (c *Entity) PosSet(p2 engi.Point) {
 			ptmp.Add(v.PositionRelativeToParent)
 			v.PosSet(ptmp)
 		}
+	}
+}
+
+func (c *Entity) GetPriority() engi.PriorityLevel {
+	return c.priority
+}
+
+func (c *Entity) SetPriority(p engi.PriorityLevel) {
+	c.priority = p
+	c.Render.SetPriority(p)
+	entitiesChange = true
+
+	for _, v := range c.Childrens {
+		v.SetPriority(p + v.PriorityRelativeToParent)
+	}
+
+	if !c.DontAutoSetPriority && c.Parent != nil {
+		c.PriorityRelativeToParent = c.priority - c.Parent.priority
 	}
 }

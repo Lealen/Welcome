@@ -190,5 +190,5 @@ func (c *GuiSystem) New(w *ecs.World) {
 }
 
 func (c *GuiSystem) Update(entity *ecs.Entity, dt float32) {
-	UpdateEntities()
+	UpdateEntities(dt)
 }
