@@ -189,11 +189,11 @@ func (p *Entity) AddChildren(c *Entity) {
 	p.Childrens = append(p.Childrens, c)
 	c.Parent = p
 
-	if !c.DontAutoSetPosition && c.PositionRelativeToParent.X == 0 && c.PositionRelativeToParent.Y == 0 {
-		c.PositionRelativeToParent = engi.Point{X: c.Space.Position.X - p.Space.Position.X, Y: c.Space.Position.Y - p.Space.Position.Y}
-	} else if !c.DontAutoSetPosition && c.Space.Position.X == 0 && c.Space.Position.Y == 0 {
+	if !c.DontAutoSetPosition && c.Space.Position.X == 0 && c.Space.Position.Y == 0 {
 		c.Space.Position.X = p.Space.Position.X + c.PositionRelativeToParent.X
 		c.Space.Position.Y = p.Space.Position.Y + c.PositionRelativeToParent.Y
+	} else if !c.DontAutoSetPosition && c.PositionRelativeToParent.X == 0 && c.PositionRelativeToParent.Y == 0 {
+		c.PositionRelativeToParent = engi.Point{X: c.Space.Position.X - p.Space.Position.X, Y: c.Space.Position.Y - p.Space.Position.Y}
 	}
 
 	if !c.DontAutoSetPriority && c.PriorityRelativeToParent == 0 {
