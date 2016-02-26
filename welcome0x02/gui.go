@@ -96,6 +96,18 @@ func (c *GuiSystem) New(w *ecs.World) {
 		OnDragged: func(e *Entity) {
 			//fmt.Println("dragged")
 			e.Parent.PosAdd(engi.Point{X: mouseX - prevMouseX, Y: mouseY - prevMouseY})
+			minx := CameraGetZ()*(engi.Width()/engi.WindowWidth()) + CameraGetX() - (engi.Width()/2)*CameraGetZ()
+			miny := CameraGetZ()*(engi.Height()/engi.WindowHeight()) + CameraGetY() - (engi.Height()/2)*CameraGetZ()
+			if e.Parent.Space.Position.X < minx {
+				e.Parent.PosSet(engi.Point{X: minx, Y: e.Parent.Space.Position.Y})
+			} else if e.Parent.Space.Position.X > minx+engi.Width()-e.Parent.Space.Width {
+				e.Parent.PosSet(engi.Point{X: minx + engi.Width() - e.Parent.Space.Width, Y: e.Parent.Space.Position.Y})
+			}
+			if e.Parent.Space.Position.Y < miny {
+				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: miny})
+			} else if e.Parent.Space.Position.Y > miny+engi.Height()-e.Parent.Space.Height {
+				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: miny + engi.Height() - e.Parent.Space.Height})
+			}
 		},
 		OnRightClicked: func(e *Entity) {
 			//fmt.Println("right clicked")
@@ -153,6 +165,18 @@ func (c *GuiSystem) New(w *ecs.World) {
 		Height:   160,
 		OnDragged: func(e *Entity) {
 			e.PosAdd(engi.Point{X: mouseX - prevMouseX, Y: mouseY - prevMouseY})
+			minx := CameraGetZ()*(engi.Width()/engi.WindowWidth()) + CameraGetX() - (engi.Width()/2)*CameraGetZ()
+			miny := CameraGetZ()*(engi.Height()/engi.WindowHeight()) + CameraGetY() - (engi.Height()/2)*CameraGetZ()
+			if e.Space.Position.X < minx {
+				e.PosSet(engi.Point{X: minx, Y: e.Space.Position.Y})
+			} else if e.Space.Position.X > minx+engi.Width()-e.Space.Width {
+				e.PosSet(engi.Point{X: minx + engi.Width() - e.Space.Width, Y: e.Space.Position.Y})
+			}
+			if e.Space.Position.Y < miny {
+				e.PosSet(engi.Point{X: e.Space.Position.X, Y: miny})
+			} else if e.Space.Position.Y > miny+engi.Height()-e.Space.Height {
+				e.PosSet(engi.Point{X: e.Space.Position.X, Y: miny + engi.Height() - e.Space.Height})
+			}
 		},
 	})
 

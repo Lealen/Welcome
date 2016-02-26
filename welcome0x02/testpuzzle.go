@@ -123,15 +123,17 @@ func (c *TestPuzzleSystem) New(w *ecs.World) {
 		Priority:                 engi.MiddleGround + 1,
 		OnDragged: func(e *Entity) {
 			e.Parent.PosAdd(engi.Point{X: mouseX - prevMouseX, Y: mouseY - prevMouseY})
-			if e.Parent.Space.Position.X < 0 {
-				e.Parent.PosSet(engi.Point{X: 0, Y: e.Parent.Space.Position.Y})
-			} else if e.Parent.Space.Position.X > engi.Width()-e.Parent.Space.Width {
-				e.Parent.PosSet(engi.Point{X: engi.Width() - e.Parent.Space.Width, Y: e.Parent.Space.Position.Y})
+			minx := CameraGetZ()*(engi.Width()/engi.WindowWidth()) + CameraGetX() - (engi.Width()/2)*CameraGetZ()
+			miny := CameraGetZ()*(engi.Height()/engi.WindowHeight()) + CameraGetY() - (engi.Height()/2)*CameraGetZ()
+			if e.Parent.Space.Position.X < minx {
+				e.Parent.PosSet(engi.Point{X: minx, Y: e.Parent.Space.Position.Y})
+			} else if e.Parent.Space.Position.X > minx+engi.Width()-e.Parent.Space.Width {
+				e.Parent.PosSet(engi.Point{X: minx + engi.Width() - e.Parent.Space.Width, Y: e.Parent.Space.Position.Y})
 			}
-			if e.Parent.Space.Position.Y < 0 {
-				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: 0})
-			} else if e.Parent.Space.Position.Y > engi.Height()-e.Parent.Space.Height {
-				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: engi.Height() - e.Parent.Space.Height})
+			if e.Parent.Space.Position.Y < miny {
+				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: miny})
+			} else if e.Parent.Space.Position.Y > miny+engi.Height()-e.Parent.Space.Height {
+				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: miny + engi.Height() - e.Parent.Space.Height})
 			}
 		},
 	}))

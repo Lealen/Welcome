@@ -66,6 +66,18 @@ func (c *TestPuzzle3System) New(w *ecs.World) {
 		Priority:       engi.MiddleGround + 1,
 		OnDragged: func(e *Entity) {
 			e.Parent.PosAdd(engi.Point{X: mouseX - prevMouseX, Y: mouseY - prevMouseY})
+			minx := CameraGetZ()*(engi.Width()/engi.WindowWidth()) + CameraGetX() - (engi.Width()/2)*CameraGetZ()
+			miny := CameraGetZ()*(engi.Height()/engi.WindowHeight()) + CameraGetY() - (engi.Height()/2)*CameraGetZ()
+			if e.Parent.Space.Position.X < minx {
+				e.Parent.PosSet(engi.Point{X: minx, Y: e.Parent.Space.Position.Y})
+			} else if e.Parent.Space.Position.X > minx+engi.Width()-e.Parent.Space.Width {
+				e.Parent.PosSet(engi.Point{X: minx + engi.Width() - e.Parent.Space.Width, Y: e.Parent.Space.Position.Y})
+			}
+			if e.Parent.Space.Position.Y < miny {
+				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: miny})
+			} else if e.Parent.Space.Position.Y > miny+engi.Height()-e.Parent.Space.Height {
+				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: miny + engi.Height() - e.Parent.Space.Height})
+			}
 		},
 	}))
 
