@@ -36,7 +36,7 @@ func (*Gui) Type() string { return "Gui" }
 type GuiSystem struct {
 	*ecs.System
 
-	//entities []*Entity
+	entitiestext []*Entity
 
 	font *engi.Font
 
@@ -143,15 +143,15 @@ func (c *GuiSystem) New(w *ecs.World) {
 	//entwindow.AddChildren(entwindowtopleftborder)
 
 	entwindowtoprightcloseicon := NewEntity("windowtoprightcloseicon", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
-		Texture:  loadTexture("guix.png"),
-		Position: engi.Point{X: 880, Y: 100},
-		Scale:    engi.Point{X: 1, Y: 1},
-		Width:    20,
-		Height:   20,
+		Texture: loadTexture("guix.png"),
+		Scale:   engi.Point{X: 1, Y: 1},
+		Width:   20,
+		Height:  20,
 		PositionRelativeToParent: engi.Point{X: 780, Y: 0},
 		MoveWithParent:           true,
 		Priority:                 engi.MiddleGround + 2,
 		OnPress: func(e *Entity) {
+			c.entitiestext = nil
 			e.Parent.RemoveEntity()
 		},
 	})
@@ -183,13 +183,13 @@ func (c *GuiSystem) New(w *ecs.World) {
 	//*
 	for i := 0; i < 300; i++ {
 		entwindowtexttest := NewEntity("windowtexttest", []string{"RenderSystem"}, c.world, &EntityDefaults{
-			Texture:  c.font.Render("OMG, hello!"),
-			Position: engi.Point{X: float32((i*50)%600 + 15 + 100), Y: float32(((i+30)/30)*50%700 + 100)},
-			Scale:    engi.Point{X: 1, Y: 1},
-			PositionRelativeToParent: engi.Point{X: float32((i*50)%600 + 15), Y: float32(((i + 30) / 30) % 600)},
+			Texture: c.font.Render("OMG, hello!"),
+			Scale:   engi.Point{X: 1, Y: 1},
+			PositionRelativeToParent: engi.Point{X: randoms.Float32()*560 + 20, Y: randoms.Float32()*540 + 20},
 			MoveWithParent:           true,
 			Priority:                 engi.MiddleGround + 1,
 		})
+		c.entitiestext = append(c.entitiestext, entwindowtexttest)
 		entwindow.AddChildren(entwindowtexttest)
 	}
 	//*/
@@ -223,6 +223,18 @@ func (c *GuiSystem) New(w *ecs.World) {
 
 }
 
+//var changedt float32
+
 func (c *GuiSystem) Update(entity *ecs.Entity, dt float32) {
 	UpdateEntities(dt)
+
+	/*
+		changedt += dt
+		if changedt > 0.04 {
+			for _, v := range c.entitiestext {
+				v.PosSetRel(engi.Point{X: randoms.Float32()*560 + 20, Y: randoms.Float32()*540 + 20})
+			}
+			changedt -= 0.04
+		}
+		//*/
 }

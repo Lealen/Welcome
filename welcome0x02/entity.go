@@ -227,6 +227,23 @@ func (c *Entity) PosSet(p2 engi.Point) {
 	}
 }
 
+func (c *Entity) PosSetRel(p2 engi.Point) {
+	if c.Parent != nil {
+		c.Space.Position.SetPoint(c.Parent.Space.Position)
+		c.Space.Position.Add(p2)
+		c.PositionRelativeToParent = engi.Point{X: c.Space.Position.X - c.Parent.Space.Position.X, Y: c.Space.Position.Y - c.Parent.Space.Position.Y}
+	} else {
+		c.Space.Position.SetPoint(p2)
+	}
+	for _, v := range c.Childrens {
+		if v.MoveWithParent {
+			ptmp := c.Space.Position
+			ptmp.Add(v.PositionRelativeToParent)
+			v.PosSet(ptmp)
+		}
+	}
+}
+
 func (c *Entity) GetPriority() engi.PriorityLevel {
 	return c.priority
 }
