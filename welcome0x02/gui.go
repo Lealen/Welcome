@@ -25,6 +25,10 @@ func (c *Gui) Setup(w *ecs.World) {
 	engi.RegisterScene(&TestPuzzle2{})
 	engi.RegisterScene(&TestPuzzle3{})
 
+	engi.RegisterScene(&Editor{})
+
+	engi.RegisterScene(&Dalt{})
+
 	menu := ecs.NewEntity([]string{"RenderSystem", "GuiSystem"})
 	w.AddEntity(menu)
 }
@@ -228,6 +232,14 @@ func (c *GuiSystem) New(w *ecs.World) {
 func (c *GuiSystem) Update(entity *ecs.Entity, dt float32) {
 	UpdateEntities(dt)
 
+	//if engi.Keys.Get(engi.CONTROL).Down() {
+	if engi.Keys.Get(engi.E).JustPressed() {
+		err := engi.SetSceneByName("Editor", false)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	//}
 	/*
 		changedt += dt
 		if changedt > 0.04 {
