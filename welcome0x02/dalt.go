@@ -102,6 +102,8 @@ func (c *DaltSystem) New(w *ecs.World) {
 		},
 	})
 
+	var daltred, daltgreen, daltblue uint8
+
 	NewEntity("Color Blind Vision", []string{"RenderSystem"}, c.world, &EntityDefaults{
 		Texture: GetTextureColor(color.RGBA{
 			R: c.red,
@@ -114,31 +116,147 @@ func (c *DaltSystem) New(w *ecs.World) {
 		Height:   size,
 		Priority: engi.HUDGround + 1,
 		OnUpdate: func(e *Entity, dt float32) {
-			daltgreen, daltblue := c.green, c.blue
+			var nasilenie float32 = 0.66 //0.5 //0.75
 
-			daltgreen = uint8(float32(c.green) * 0.75)
-			daltblue = uint8(float32(c.blue) * 0.75)
+			daltred, daltgreen, daltblue = c.red, c.green, c.blue
 
-			/*
-				if c.red < 64 {
-					daltgreen += c.red
-				} else if c.red >= 64 && c.red < 128 {
-					daltgreen += 64
-					daltblue += c.red - 64
-				} else if c.red >= 128 && c.red < 192 {
-					daltgreen += 64 - (c.red - 128)
-					daltblue += 64
-				} else {
-					daltblue += 64 - (c.red - 192)
-				}
-				//*/
-			proc := c.red / 255.0
-			daltgreen *= proc
-			daltblue *= proc
+			daltred = uint8(float32(c.red) /* * 0.5 */)
+			daltgreen = uint8(float32(c.green) * nasilenie)
+			daltblue = uint8(float32(c.blue) * nasilenie)
 
+			proc := float32(c.red) / 255.0
+			daltgreen += uint8(256 * (1 - nasilenie) * proc)
+			daltblue += uint8(256 * (1 - nasilenie) * proc)
+
+			e.Render.SetDrawable(GetTextureColor(color.RGBA{
+				R: daltred,
+				G: daltgreen,
+				B: daltblue,
+				A: 255,
+			}))
+		},
+	})
+
+	NewEntity("Red Color Blind Vision", []string{"RenderSystem"}, c.world, &EntityDefaults{
+		Texture: GetTextureColor(color.RGBA{
+			R: c.red,
+			G: 0,
+			B: 0,
+			A: 255,
+		}),
+		Position: engi.Point{X: engi.Width()/2 + size + 4, Y: engi.Height()/2 - size/2},
+		Width:    size / 3,
+		Height:   size / 3,
+		Priority: engi.HUDGround + 1,
+		OnUpdate: func(e *Entity, dt float32) {
+			e.Render.SetDrawable(GetTextureColor(color.RGBA{
+				R: daltred,
+				G: 0,
+				B: 0,
+				A: 255,
+			}))
+		},
+	})
+
+	NewEntity("Green Color Blind Vision", []string{"RenderSystem"}, c.world, &EntityDefaults{
+		Texture: GetTextureColor(color.RGBA{
+			R: 0,
+			G: c.green,
+			B: 0,
+			A: 255,
+		}),
+		Position: engi.Point{X: engi.Width()/2 + size + 4, Y: engi.Height()/2 - size/6},
+		Width:    size / 3,
+		Height:   size / 3,
+		Priority: engi.HUDGround + 1,
+		OnUpdate: func(e *Entity, dt float32) {
+			e.Render.SetDrawable(GetTextureColor(color.RGBA{
+				R: 0,
+				G: daltgreen,
+				B: 0,
+				A: 255,
+			}))
+		},
+	})
+
+	NewEntity("Blue Color Blind Vision", []string{"RenderSystem"}, c.world, &EntityDefaults{
+		Texture: GetTextureColor(color.RGBA{
+			R: 0,
+			G: 0,
+			B: c.blue,
+			A: 255,
+		}),
+		Position: engi.Point{X: engi.Width()/2 + size + 4, Y: engi.Height()/2 + size/6},
+		Width:    size / 3,
+		Height:   size / 3,
+		Priority: engi.HUDGround + 1,
+		OnUpdate: func(e *Entity, dt float32) {
+			e.Render.SetDrawable(GetTextureColor(color.RGBA{
+				R: 0,
+				G: 0,
+				B: daltblue,
+				A: 255,
+			}))
+		},
+	})
+
+	NewEntity("Red Color Normal Vision", []string{"RenderSystem"}, c.world, &EntityDefaults{
+		Texture: GetTextureColor(color.RGBA{
+			R: c.red,
+			G: 0,
+			B: 0,
+			A: 255,
+		}),
+		Position: engi.Point{X: engi.Width()/2 - size - size/3 - 4, Y: engi.Height()/2 - size/2},
+		Width:    size / 3,
+		Height:   size / 3,
+		Priority: engi.HUDGround + 1,
+		OnUpdate: func(e *Entity, dt float32) {
+			e.Render.SetDrawable(GetTextureColor(color.RGBA{
+				R: c.red,
+				G: 0,
+				B: 0,
+				A: 255,
+			}))
+		},
+	})
+
+	NewEntity("Green Color Normal Vision", []string{"RenderSystem"}, c.world, &EntityDefaults{
+		Texture: GetTextureColor(color.RGBA{
+			R: 0,
+			G: c.green,
+			B: 0,
+			A: 255,
+		}),
+		Position: engi.Point{X: engi.Width()/2 - size - size/3 - 4, Y: engi.Height()/2 - size/6},
+		Width:    size / 3,
+		Height:   size / 3,
+		Priority: engi.HUDGround + 1,
+		OnUpdate: func(e *Entity, dt float32) {
 			e.Render.SetDrawable(GetTextureColor(color.RGBA{
 				R: 0,
 				G: c.green,
+				B: 0,
+				A: 255,
+			}))
+		},
+	})
+
+	NewEntity("Blue Color Normal Vision", []string{"RenderSystem"}, c.world, &EntityDefaults{
+		Texture: GetTextureColor(color.RGBA{
+			R: 0,
+			G: 0,
+			B: c.blue,
+			A: 255,
+		}),
+		Position: engi.Point{X: engi.Width()/2 - size - size/3 - 4, Y: engi.Height()/2 + size/6},
+		Width:    size / 3,
+		Height:   size / 3,
+		Priority: engi.HUDGround + 1,
+		OnUpdate: func(e *Entity, dt float32) {
+			e.Render.SetDrawable(GetTextureColor(color.RGBA{
+				R: 0,
+				G: 0,
 				B: c.blue,
 				A: 255,
 			}))

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"os/user"
 
 	"github.com/Lealen/engi"
 	"github.com/Lealen/engi/ecs"
@@ -69,97 +70,13 @@ func (c *GuiSystem) New(w *ecs.World) {
 		fmt.Println(err)
 	}
 
-	entwindow := NewEntity("window", []string{"RenderSystem"}, c.world, &EntityDefaults{
-		Texture:  loadTexture("guitestblack.png"),
-		Position: engi.Point{X: 100, Y: 100},
-		Scale:    engi.Point{X: 40, Y: 30},
-		Width:    800,
-		Height:   600,
-		Priority: engi.MiddleGround,
-	})
-	//c.entities = append(c.entities, entwindow)
-
-	entwindow.AddChildren(NewEntity("windowtopborder", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
-		Texture:  loadTexture("guitesttop.png"),
-		Position: engi.Point{X: 100, Y: 100},
-		Scale:    engi.Point{X: 40, Y: 1},
-		Width:    800,
-		Height:   20,
-		PositionRelativeToParent: engi.Point{X: 0, Y: 0},
-		MoveWithParent:           true,
-		Priority:                 engi.MiddleGround + 1,
-		OnClicked: func(e *Entity) {
-			//fmt.Println("clicked")
-		},
-		OnPress: func(e *Entity) {
-			fmt.Println("pressed")
-		},
-		OnRelease: func(e *Entity) {
-			fmt.Println("released")
-		},
-		OnDragged: func(e *Entity) {
-			//fmt.Println("dragged")
-			e.Parent.PosAdd(engi.Point{X: mouseX - prevMouseX, Y: mouseY - prevMouseY})
-			minx := CameraGetZ()*(engi.Width()/engi.WindowWidth()) + CameraGetX() - (engi.Width()/2)*CameraGetZ()
-			miny := CameraGetZ()*(engi.Height()/engi.WindowHeight()) + CameraGetY() - (engi.Height()/2)*CameraGetZ()
-			if e.Parent.Space.Position.X < minx {
-				e.Parent.PosSet(engi.Point{X: minx, Y: e.Parent.Space.Position.Y})
-			} else if e.Parent.Space.Position.X > minx+engi.Width()-e.Parent.Space.Width {
-				e.Parent.PosSet(engi.Point{X: minx + engi.Width() - e.Parent.Space.Width, Y: e.Parent.Space.Position.Y})
-			}
-			if e.Parent.Space.Position.Y < miny {
-				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: miny})
-			} else if e.Parent.Space.Position.Y > miny+engi.Height()-e.Parent.Space.Height {
-				e.Parent.PosSet(engi.Point{X: e.Parent.Space.Position.X, Y: miny + engi.Height() - e.Parent.Space.Height})
-			}
-		},
-		OnRightClicked: func(e *Entity) {
-			//fmt.Println("right clicked")
-		},
-		OnRightPress: func(e *Entity) {
-			fmt.Println("right pressed")
-		},
-		OnRightRelease: func(e *Entity) {
-			fmt.Println("right released")
-		},
-		OnEnter: func(e *Entity) {
-			fmt.Println("entered")
-		},
-		OnLeave: func(e *Entity) {
-			fmt.Println("leaved")
-		},
-		OnWindowResize: func(e *Entity) {
-			fmt.Println("resized")
-		},
-	}))
-	//entwindow.AddChildren(entwindowtopborder)
-
-	entwindow.AddChildren(NewEntity("windowtopleftborder", []string{"RenderSystem"}, c.world, &EntityDefaults{
-		Texture:  loadTexture("guitestleft.png"),
-		Position: engi.Point{X: 100, Y: 100},
+	usr, _ := user.Current()
+	NewEntity("gotopuzzle", []string{"RenderSystem"}, c.world, &EntityDefaults{
+		Texture:  c.font.Render(fmt.Sprintf("Hello, %s!", usr.Username)),
+		Position: engi.Point{X: 10, Y: 10},
 		Scale:    engi.Point{X: 1, Y: 1},
-		Width:    20,
-		Height:   20,
-		PositionRelativeToParent: engi.Point{X: 0, Y: 0},
-		MoveWithParent:           true,
-		Priority:                 engi.MiddleGround + 2,
-	}))
-	//entwindow.AddChildren(entwindowtopleftborder)
-
-	entwindowtoprightcloseicon := NewEntity("windowtoprightcloseicon", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
-		Texture: loadTexture("guix.png"),
-		Scale:   engi.Point{X: 1, Y: 1},
-		Width:   20,
-		Height:  20,
-		PositionRelativeToParent: engi.Point{X: 780, Y: 0},
-		MoveWithParent:           true,
-		Priority:                 engi.MiddleGround + 2,
-		OnPress: func(e *Entity) {
-			c.entitiestext = nil
-			e.Parent.RemoveEntity()
-		},
+		Priority: engi.HUDGround,
 	})
-	entwindow.AddChildren(entwindowtoprightcloseicon)
 
 	NewEntity("testicon", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture:  loadTexture("icon.png"),
@@ -183,20 +100,6 @@ func (c *GuiSystem) New(w *ecs.World) {
 			}
 		},
 	})
-
-	//*
-	for i := 0; i < 300; i++ {
-		entwindowtexttest := NewEntity("windowtexttest", []string{"RenderSystem"}, c.world, &EntityDefaults{
-			Texture: c.font.Render("OMG, hello!"),
-			Scale:   engi.Point{X: 1, Y: 1},
-			PositionRelativeToParent: engi.Point{X: randoms.Float32()*560 + 20, Y: randoms.Float32()*540 + 20},
-			MoveWithParent:           true,
-			Priority:                 engi.MiddleGround + 1,
-		})
-		c.entitiestext = append(c.entitiestext, entwindowtexttest)
-		entwindow.AddChildren(entwindowtexttest)
-	}
-	//*/
 
 	NewEntity("gotopuzzle", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture:  c.font.Render("_test_puzzle_1_"),
