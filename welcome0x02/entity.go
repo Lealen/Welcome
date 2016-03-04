@@ -261,3 +261,21 @@ func (c *Entity) SetPriority(p engi.PriorityLevel) {
 		c.PriorityRelativeToParent = c.priority - c.Parent.priority
 	}
 }
+
+func AddOneBelowAnother(position engi.Point, shift float32, entities ...*Entity) {
+	lastpos := position
+	for _, v := range entities {
+		v.PosSet(lastpos)
+		lastpos.Y += v.Space.Height
+		lastpos.Y += shift
+	}
+}
+
+func AddOneNextToAnother(position engi.Point, shift float32, entities ...*Entity) {
+	lastpos := position
+	for _, v := range entities {
+		v.PosSet(lastpos)
+		lastpos.X += v.Space.Width
+		lastpos.X += shift
+	}
+}

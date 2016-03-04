@@ -72,11 +72,20 @@ func (c *EditorSystem) New(w *ecs.World) {
 		},
 	})
 
-	NewEntity("testtext", []string{"RenderSystem"}, c.world, &EntityDefaults{
-		Texture:  c.mediumFont.Render("text string"),
-		Position: engi.Point{X: 40, Y: 40},
-		Priority: engi.HUDGround + 1,
-	})
+	AddOneNextToAnother(engi.Point{X: 10, Y: 10}, 28,
+		NewEntity("zapisz", []string{"RenderSystem"}, c.world, &EntityDefaults{
+			Texture:  c.smallFont.Render("zapisz"),
+			Priority: engi.HUDGround + 1,
+		}),
+		NewEntity("wczytaj", []string{"RenderSystem"}, c.world, &EntityDefaults{
+			Texture:  c.smallFont.Render("wczytaj"),
+			Priority: engi.HUDGround + 1,
+		}),
+		NewEntity("wyjdź", []string{"RenderSystem"}, c.world, &EntityDefaults{
+			Texture:  c.smallFont.Render("wyjdz"),
+			Priority: engi.HUDGround + 1,
+		}),
+	)
 
 	NewEntity("testicon", []string{"RenderSystem", "MouseSystem"}, c.world, &EntityDefaults{
 		Texture:  loadTexture("icon.png"),
